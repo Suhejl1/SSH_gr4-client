@@ -89,7 +89,7 @@ const Home = ({ faqs }) => {
           </a>
         </div> */}
 
-        {faqs.map((item) => {
+        {/* {faqs.map((item) => {
           // eslint-disable-next-line react-hooks/rules-of-hooks
           const [visible, setVisible] = useState(false);
           return (
@@ -142,7 +142,7 @@ const Home = ({ faqs }) => {
               )}
             </div>
           );
-        })}
+        })} */}
 
         <div className="flex flex-col items-center justify-center">
           {/* <Link href={"/addFaqPage"}> */}
@@ -167,17 +167,17 @@ const Home = ({ faqs }) => {
     </div>
   );
 };
-export async function getServerSideProps(context) {
-  if (!mongoose.connections[0].readyState) {
-    await mongoose.connect(process.env.MONGO_URI);
-  }
-  let faqs = await FAQ.find({
-    question: { $exists: true },
-    answer: { $ne: "" },
-  });
-  console.log(faqs);
-  return {
-    props: { faqs: JSON.parse(JSON.stringify(faqs)) }, // will be passed to the page component as props
-  };
-}
+// export async function getServerSideProps(context) {
+//   if (!mongoose.connections[0].readyState) {
+//     await mongoose.connect(process.env.MONGO_URI);
+//   }
+//   let faqs = await FAQ.find({
+//     question: { $exists: true },
+//     answer: { $ne: "" },
+//   });
+//   console.log(faqs);
+//   return {
+//     props: { faqs: JSON.parse(JSON.stringify(faqs)) }, // will be passed to the page component as props
+//   };
+// }
 export default Home;
