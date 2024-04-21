@@ -8,7 +8,7 @@ import Checkout from "./components/CheckoutForm/Checkout/Checkout";
 import ProductView from "./components/ProductView/ProductView";
 import Manga from "./components/Manga/Manga";
 import Footer from "./components/Footer/Footer";
-// import Login from "./components/Login&Signup/login";
+import Login from "./components/Login&Signup/login";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
@@ -138,7 +138,7 @@ const App = () => {
         />
         <Switch>
           <Route exact path="/">
-            <SignUp />
+            <Login />
           </Route>
           <Route path="/home">
             <Products
