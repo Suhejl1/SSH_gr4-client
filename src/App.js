@@ -8,7 +8,7 @@ import Checkout from "./components/CheckoutForm/Checkout/Checkout";
 import ProductView from "./components/ProductView/ProductView";
 import Manga from "./components/Manga/Manga";
 import Footer from "./components/Footer/Footer";
-import Login from "./components/Login&Signup/login"; 
+import Login from "./components/Login&Signup/login";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
@@ -17,6 +17,7 @@ import loadingImg from "./assets/loader.gif";
 import "./style.css";
 import Fiction from "./components/Fiction/Fiction";
 import Biography from "./components/Bio/Biography";
+import SignUp from "./components/signup/signup";
 
 const App = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
