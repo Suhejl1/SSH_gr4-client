@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom'; // Import useHistory hook
+import { useHistory, Link } from 'react-router-dom'; // Import useHistory and Link components
 import './Login.css'; // Import a CSS file for styling
 import bookImage from './book_store.jpg'; // Import the book image
 
@@ -18,7 +18,7 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-signup-container">
       {/* Add book image as background */}
       <img src={bookImage} alt="Book" className="book-background" />
       <div className="title-container">
@@ -48,6 +48,7 @@ const Login = () => {
           <button type="submit" className="btn btn-primary">Login</button>
         </form>
         {error && <p className="error-message">{error}</p>}
+        <p>Don't have an account? <Link to="/signup">Sign Up</Link></p> {/* Link to signup page */}
       </div>
     </div>
   );

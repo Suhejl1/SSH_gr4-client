@@ -17,7 +17,7 @@ import loadingImg from "./assets/loader.gif";
 import "./style.css";
 import Fiction from "./components/Fiction/Fiction";
 import Biography from "./components/Bio/Biography";
-import SignUp from "./components/signup/signup";
+import SignUp from "./components/Login&Signup/signup";
 
 const App = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -139,6 +139,9 @@ const App = () => {
         <Switch>
           <Route exact path="/">
             <Login />
+          </Route>
+          <Route path="/signup">
+            <SignUp />S
           </Route>
           <Route path="/home">
             <Products
