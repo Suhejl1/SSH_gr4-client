@@ -8,6 +8,7 @@ import Checkout from "./components/CheckoutForm/Checkout/Checkout";
 import ProductView from "./components/ProductView/ProductView";
 import Manga from "./components/Manga/Manga";
 import Footer from "./components/Footer/Footer";
+import Login from "./components/Login&Signup/login"; 
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
@@ -127,76 +128,77 @@ const App = () => {
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   return (
-    <div>
-      {products.length > 0 ? (
-        <>
-          <Router>
-            <div style={{ display: "flex" }}>
-              <CssBaseline />
-              <Navbar
-                totalItems={cart.total_items}
-                handleDrawerToggle={handleDrawerToggle}
-              />
-              <Switch>
-                <Route exact path="/">
-                  <Products
-                    products={products}
-                    featureProducts={featureProducts}
-                    onAddToCart={handleAddToCart}
-                    handleUpdateCartQty
-                  />
-                </Route>
-                <Route exact path="/cart">
-                  <Cart
-                    cart={cart}
-                    onUpdateCartQty={handleUpdateCartQty}
-                    onRemoveFromCart={handleRemoveFromCart}
-                    onEmptyCart={handleEmptyCart}
-                  />
-                </Route>
-                <Route path="/checkout" exact>
-                  <Checkout
-                    cart={cart}
-                    order={order}
-                    onCaptureCheckout={handleCaptureCheckout}
-                    error={errorMessage}
-                  />
-                </Route>
-                <Route path="/product-view/:id" exact>
-                  <ProductView />
-                </Route>
-                <Route path="/manga" exact>
-                  <Manga
-                    mangaProducts={mangaProducts}
-                    onAddToCart={handleAddToCart}
-                    handleUpdateCartQty
-                  />
-                </Route>
-                <Route path="/fiction" exact>
-                  <Fiction
-                    fictionProducts={fictionProducts}
-                    onAddToCart={handleAddToCart}
-                    handleUpdateCartQty
-                  />
-                </Route>
-                <Route path="/biography" exact>
-                  <Biography
-                    bioProducts={bioProducts}
-                    onAddToCart={handleAddToCart}
-                    handleUpdateCartQty
-                  />
-                </Route>
-              </Switch>
-            </div>
-          </Router>
-          <Footer />
-        </>
-      ) : (
-        <div className="loader">
-          <img src={loadingImg} alt="Loading" />
-        </div>
-      )}
-    </div>
+    <Router>
+      <div>
+        <CssBaseline />
+        <Navbar
+          totalItems={cart.total_items}
+          handleDrawerToggle={handleDrawerToggle}
+        />
+        <Switch>
+          <Route exact path="/">
+            <Login />
+          </Route>
+          <Route path="/home">
+            <Products
+              products={products}
+              featureProducts={featureProducts}
+              onAddToCart={handleAddToCart}
+              handleUpdateCartQty
+            />
+          </Route>
+          <Route path="/products">
+            <Products
+              products={products}
+              featureProducts={featureProducts}
+              onAddToCart={handleAddToCart}
+              handleUpdateCartQty
+            />
+          </Route>
+          <Route path="/cart">
+            <Cart
+              cart={cart}
+              onUpdateCartQty={handleUpdateCartQty}
+              onRemoveFromCart={handleRemoveFromCart}
+              onEmptyCart={handleEmptyCart}
+            />
+          </Route>
+          <Route path="/checkout" exact>
+            <Checkout
+              cart={cart}
+              order={order}
+              onCaptureCheckout={handleCaptureCheckout}
+              error={errorMessage}
+            />
+          </Route>
+          <Route path="/product-view/:id" exact>
+            <ProductView />
+          </Route>
+          <Route path="/manga" exact>
+            <Manga
+              mangaProducts={mangaProducts}
+              onAddToCart={handleAddToCart}
+              handleUpdateCartQty
+            />
+          </Route>
+          <Route path="/fiction" exact>
+            <Fiction
+              fictionProducts={fictionProducts}
+              onAddToCart={handleAddToCart}
+              handleUpdateCartQty
+            />
+          </Route>
+          <Route path="/biography" exact>
+            <Biography
+              bioProducts={bioProducts}
+              onAddToCart={handleAddToCart}
+              handleUpdateCartQty
+            />
+          </Route>
+        </Switch>
+        <Footer />
+      </div>
+    </Router>
   );
 };
 
