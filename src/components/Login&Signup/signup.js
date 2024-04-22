@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHistory, Link } from 'react-router-dom'; // Import useHistory and Link components
 import './Login.css'; // Import a CSS file for styling
 import bookImage from './book_store.jpg'; // Import the book image
@@ -13,20 +13,6 @@ const SignUp = () => {
     const [formTopPosition, setFormTopPosition] = useState(50); // Default top position
     const [welcomeTopPosition, setWelcomeTopPosition] = useState(0); // Default top position for welcome text
     const history = useHistory(); // Initialize useHistory hook
-
-    useEffect(() => {
-        // Calculate the top position for the form container based on the height of the window
-        const windowHeight = window.innerHeight;
-        const formContainerHeight = document.querySelector('.form-container').offsetHeight;
-        const calculatedFormTopPosition = (windowHeight - formContainerHeight) / 2;
-        setFormTopPosition(calculatedFormTopPosition);
-
-        // Calculate the top position for the welcome text to ensure visibility
-        const titleHeight = document.querySelector('.welcome-title').offsetHeight;
-        const calculatedWelcomeTopPosition = (windowHeight - formContainerHeight - titleHeight) / 2;
-        setWelcomeTopPosition(calculatedWelcomeTopPosition);
-    }, []); // Run this effect only once after initial render
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 

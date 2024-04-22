@@ -141,7 +141,7 @@ const App = () => {
             <Login />
           </Route>
           <Route path="/signup">
-            <SignUp />S
+            <SignUp />
           </Route>
           <Route path="/home">
             <Products

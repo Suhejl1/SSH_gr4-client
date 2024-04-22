@@ -22,23 +22,27 @@
 
 .title-container {
   position: fixed;
-  /* Set position to fixed */
-  top: 50px;
-  /* Adjust top position as needed */
+  top: 30px;
+  /* Adjust the top position as needed */
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
-  /* Ensure the title is above the background image */
 }
 
 
+
 .welcome-title {
-  font-size: 48px;
-  /* Increase font size */
+  font-size: 40px;
   font-weight: bold;
-  /* Make font bold */
-  color: white;
+  color: rgba(255, 255, 255, 0.9);
+  /* Semi-transparent white color */
   text-align: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  /* Semi-transparent black background */
+  padding: 10px 20px;
+  /* Add padding for better readability */
+  border-radius: 10px;
+  /* Add border radius for rounded corners */
 }
 
 .form-container {
