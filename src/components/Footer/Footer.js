@@ -1,8 +1,19 @@
 import React from "react";
 import { MDBCol, MDBContainer, MDBRow, MDBFooter } from "mdbreact";
 import logo from "../../assets/circles.png";
+import { useLocation } from "react-router-dom";
 
 const Footer = () => {
+  const location = useLocation();
+
+  // Condition to check if the current path is either "/" or "/signup"
+  const hideFooter = location.pathname === "/" || location.pathname === "/signup";
+
+  // If hideFooter is true, return null to not render the Footer
+  if (hideFooter) {
+    return null;
+  }
+
   return (
     <MDBFooter color="unique-color-dark" className="font-medium pt-4 mt-4">
       <MDBContainer className="text-center text-md-left">

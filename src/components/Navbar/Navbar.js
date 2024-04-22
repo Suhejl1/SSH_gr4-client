@@ -7,12 +7,21 @@ import {
   Typography,
 } from "@material-ui/core";
 import { ShoppingCart } from "@material-ui/icons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/circles.png";
 import useStyles from "./styles";
 
 const Navbar = ({ totalItems }) => {
   const classes = useStyles();
+  const location = useLocation();
+
+  // Condition to check if the current path is either "/" or "/signup"
+  const hideNavbar = location.pathname === "/" || location.pathname === "/signup";
+
+  // If hideNavbar is true, return null to not render the Navbar
+  if (hideNavbar) {
+    return null;
+  }
 
   return (
     <div>
