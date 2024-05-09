@@ -38,9 +38,6 @@ const Footer = () => {
             <p>
               <a href="#">Book-IT</a>
             </p>
-            <p>
-              <a href="https://akshatjalan.github.io/akshat/">Portfolio</a>
-            </p>
           </MDBCol>
 
           <hr className="w-100 clearfix d-md-none" />
@@ -49,55 +46,17 @@ const Footer = () => {
               <strong>Contact</strong>
             </h6>
             <p>
-              <i className="fa fa-envelope mr-3" /> &nbsp;jalanakshat2@gmail.com
-            </p>
-            <p>
-              <a
-                className="btn-floating btn-sm rgba-white-slight mx-1"
-                href="https://www.linkedin.com/in/akshat-jalan/"
-              >
-                <i className="fab fa-linkedin-in" /> &nbsp;LinkedIn
-              </a>
+              <i className="fa fa-envelope mr-3" /> &nbsp;bookstore@gmail.com
             </p>
           </MDBCol>
         </MDBRow>
         <hr />
         <MDBRow className="d-flex align-items-center">
-          <MDBCol md="8" lg="8">
+          <MDBCol md="18" lg="18">
             <p className="text-center text-md-left grey-text">
               &copy; {new Date().getFullYear()} Made by
-              <a href=""> Akshat Jalan </a>
+              <a href=""> Fiek Students</a>
             </p>
-          </MDBCol>
-          <MDBCol md="4" lg="4" className="ml-lg-0">
-            <div className="text-center text-md-right">
-              <ul className="list-unstyled list-inline">
-                <li className="list-inline-item">
-                  <a
-                    className="btn-floating btn-sm rgba-white-slight mx-1"
-                    href="http://github.com/Akshatjalan"
-                  >
-                    <i className="fab fa-github" />
-                  </a>
-                </li>
-                <li className="list-inline-item">
-                  <a
-                    className="btn-floating btn-sm rgba-white-slight mx-1"
-                    href="https://www.linkedin.com/in/akshat-jalan/"
-                  >
-                    <i className="fab fa-linkedin-in" />
-                  </a>
-                </li>
-                <li className="list-inline-item">
-                  <a
-                    className="btn-floating btn-sm rgba-white-slight mx-1"
-                    href="https://www.instagram.com/akshatxjalan/"
-                  >
-                    <i className="fab fa-instagram" />
-                  </a>
-                </li>
-              </ul>
-            </div>
           </MDBCol>
         </MDBRow>
       </MDBContainer>
