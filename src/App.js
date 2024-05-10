@@ -18,6 +18,8 @@ import "./style.css";
 import Fiction from "./components/Fiction/Fiction";
 import Biography from "./components/Bio/Biography";
 import SignUp from "./components/Login&Signup/signup";
+import AddBook from "./components/AddBook/add-book"; 
+import CheckUsers from "./components/CheckUsers/check-users";
 
 const App = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -198,6 +200,12 @@ const App = () => {
               onAddToCart={handleAddToCart}
               handleUpdateCartQty
             />
+          </Route>
+          <Route path="/add-book"> {/* Route for AddBook component */}
+            <AddBook />
+          </Route>
+          <Route path="/users"> {/* Route for Users component */}
+            <CheckUsers/>
           </Route>
         </Switch>
         <Footer />
