@@ -54,7 +54,7 @@ const ProductView = () => {
                 size="large"
                 className="custom-button"
                 component={Link}
-                to="/home"
+                to="/"
               >
                 Continue Shopping
               </Button>
