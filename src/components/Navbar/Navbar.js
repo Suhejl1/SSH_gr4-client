@@ -22,6 +22,8 @@ import {
 import { Link, useHistory, useLocation } from "react-router-dom";
 import logo from "../../assets/circles.png";
 import useStyles from "./styles";
+import AddBook from "../AddBook/add-book";
+import CheckUsers from "../CheckUsers/check-users";
 
 const Navbar = ({ totalItems }) => {
   const classes = useStyles();
