@@ -46,7 +46,7 @@ const Footer = () => {
               <strong>Contact</strong>
             </h6>
             <p>
-              <i className="fa fa-envelope mr-3" /> &nbsp;bookstore@gmail.com
+              <i className="fa fa-envelope mr-3" /> &nbsp;bookshop@gmail.com
             </p>
           </MDBCol>
         </MDBRow>
@@ -54,8 +54,7 @@ const Footer = () => {
         <MDBRow className="d-flex align-items-center">
           <MDBCol md="18" lg="18">
             <p className="text-center text-md-left grey-text">
-              &copy; {new Date().getFullYear()} Made by
-              <a href=""> Fiek Students</a>
+              &copy; {new Date().getFullYear()} Made by Fiek Students
             </p>
           </MDBCol>
         </MDBRow>
