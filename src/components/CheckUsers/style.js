@@ -2,10 +2,16 @@ import { makeStyles } from '@material-ui/core/styles';
  
 const useStyles = makeStyles((theme) => ({
   tableContainer: {
-    margin: theme.spacing(10), // Added margin on all sides
+    margin: '100px auto', // Center the table and add space from edges
+    maxWidth: 'calc(100vw - 40px)', // Ensure there's space from both edges
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   table: {
-    minWidth: 50, // Adjusted minWidth to make the table smaller
+    minWidth: 600, // Set a minimum width for the table
+    width: '100%', // Set table width to 100%
+    overflowX: 'auto', // Enable horizontal scrolling
   },
   tableRow: {
     '&:hover': {
