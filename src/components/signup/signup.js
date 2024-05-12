@@ -21,7 +21,7 @@ const SignUp = () => {
         // Implement registration logic here (e.g., send registration request to server)
 
         // Redirect to "/home" path on successful registration
-        history.push('/home');
+        history.push('/');
     };
 
     return (
