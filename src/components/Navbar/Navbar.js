@@ -25,7 +25,7 @@ import useStyles from "./styles";
 import AddBook from "../AddBook/add-book";
 import CheckUsers from "../CheckUsers/check-users";
 
-const Navbar = ({ totalItems }) => {
+const Navbar = ({ totalItems, userRole="user" }) => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
@@ -81,27 +81,31 @@ const Navbar = ({ totalItems }) => {
               <Home />
             </IconButton>
 
-            {/* Button to add a new book */}
-            <IconButton
-              className={classes.navbarButton} // Add the class here
-              component={Link}
-              to="/add-book"
-              aria-label="Add new book"
-              color="inherit"
-            >
-              <LibraryAdd />
-            </IconButton>
+            {/* Button to add a new book (for admin only) */}
+            {userRole === 'admin' && (
+              <IconButton
+                className={classes.navbarButton} // Add the class here
+                component={Link}
+                to="/add-book"
+                aria-label="Add new book"
+                color="inherit"
+              >
+                <LibraryAdd />
+              </IconButton>
+            )}
 
-            {/* Button to view users */}
-            <IconButton
-              className={classes.navbarButton} // Add the class here
-              component={Link}
-              to="/users"
-              aria-label="View users"
-              color="inherit"
-            >
-              <Group />
-            </IconButton>
+            {/* Button to view users (for admin only) */}
+            {userRole === 'admin' && (
+              <IconButton
+                className={classes.navbarButton} // Add the class here
+                component={Link}
+                to="/users"
+                aria-label="View users"
+                color="inherit"
+              >
+                <Group />
+              </IconButton>
+            )}
 
             {/* Button to view shopping cart */}
             <IconButton
