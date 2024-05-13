@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Paper, IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import useStyles from './style';
@@ -6,8 +6,8 @@ import useStyles from './style';
 const CheckUsers = () => {
   const classes = useStyles();
 
-  // Dummy user data for demonstration
-  const users = [
+  // State for storing users
+  const [users, setUsers] = useState([
     { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
     { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
     { id: 3, name: 'Alice Johnson', email: 'alice@example.com', role: 'User' },
@@ -15,11 +15,16 @@ const CheckUsers = () => {
     { id: 5, name: 'Lebron James', email: 'lebron@example.com', role: 'User' },
     { id: 6, name: 'Steph Curry', email: 'curry@example.com', role: 'User' },
     { id: 7, name: 'James Harden', email: 'harden@example.com', role: 'User' },
-  ];
+    { id: 8, name: 'Kendrick Lamar', email: 'kendrick@example.com', role: 'Admin' },
+    { id: 9, name: 'Reis Stanovci', email: 'reis@example.com', role: 'Admin' },
+  ]);
 
   const handleDelete = (userId) => {
-    // Implement your delete logic here
-    console.log(`Delete user with ID ${userId}`);
+    // Filter out the user with the given userId
+    const updatedUsers = users.filter(user => user.id !== userId);
+    // Update the state with the filtered users
+    setUsers(updatedUsers);
+    console.log(`Deleted user with ID ${userId}`);
   };
 
   return (

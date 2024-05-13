@@ -4,17 +4,17 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
-    paddingTop: theme.spacing(12), // Added margin at the top
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    height: '100vh', // Adjust the height of the container
   },
   paper: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(4), // Increase padding for more space inside the paper
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    width: '40%', // Adjust the width as needed
+    width: '60%', // Adjust the width of the paper
+    maxWidth: '600px', // Limit the maximum width for larger screens
   },
 }));
 
@@ -58,7 +58,7 @@ const AddBook = () => {
               <TextField
                 label="Description"
                 multiline
-                rows={4}
+                rows={6} // Increase rows for larger description
                 fullWidth
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
