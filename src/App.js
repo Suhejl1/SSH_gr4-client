@@ -202,8 +202,8 @@ const App = () => {
               handleUpdateCartQty
             />
           </Route>
-{/* Route protection for admin routes */}
-{userRole === 'admin' && (
+          {/* Route protection for admin routes */}
+          {userRole === 'admin' && (
             <>
               <Route path="/add-book">
                 <AddBook />
