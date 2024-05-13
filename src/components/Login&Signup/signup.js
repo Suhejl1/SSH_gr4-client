@@ -54,15 +54,6 @@ const SignUp = () => {
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <input
-                            type="text"
-                            placeholder="Username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <input
                             type="email"
                             placeholder="Email"
                             value={email}
