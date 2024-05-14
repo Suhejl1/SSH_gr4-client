@@ -16,13 +16,6 @@ const SignUp = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate username
-        const usernameError = validateUsername(username);
-        if (usernameError) {
-            setError(usernameError);
-            return;
-        }
-
         // Validate password
         const passwordError = validatePassword(password);
         if (!passwordError) {
@@ -35,11 +28,21 @@ const SignUp = () => {
             return;
         }
 
-        // Implement registration logic here (e.g., send registration request to server)
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/v1/auth/signup`, {
+                email,
+                password
+            });
 
-        // Redirect to "/home" path on successful registration
-
-        history.push('/');
+            history.push('/'); // Redirect to home page after successful sign up
+        } catch (error) {
+            if (error.response) {
+                setError(error.response.data.message || 'Sign up failed');
+            } else {
+                setError('Sign up failed');
+            }
+            console.error('Error:', error);
+        }
     };
 
     return (

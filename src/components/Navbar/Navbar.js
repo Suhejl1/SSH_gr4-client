@@ -24,12 +24,14 @@ import logo from "../../assets/circles.png";
 import useStyles from "./styles";
 import AddBook from "../AddBook/add-book";
 import CheckUsers from "../CheckUsers/check-users";
+import {useUserRole} from "../../UserRoleContext";
 
-const Navbar = ({ totalItems, userRole="user" }) => {
+const Navbar = ({ totalItems }) => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const {userRole} = useUserRole();
 
   const handleLogout = () => {
     setOpen(true);
@@ -82,7 +84,7 @@ const Navbar = ({ totalItems, userRole="user" }) => {
             </IconButton>
 
             {/* Button to add a new book (for admin only) */}
-            {userRole === 'admin' && (
+            {userRole === 'ADMIN' && (
               <IconButton
                 className={classes.navbarButton} // Add the class here
                 component={Link}
@@ -95,7 +97,7 @@ const Navbar = ({ totalItems, userRole="user" }) => {
             )}
 
             {/* Button to view users (for admin only) */}
-            {userRole === 'admin' && (
+            {userRole === 'ADMIN' && (
               <IconButton
                 className={classes.navbarButton} // Add the class here
                 component={Link}

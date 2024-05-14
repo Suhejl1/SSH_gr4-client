@@ -10,6 +10,7 @@ import Manga from "./components/Manga/Manga";
 import Footer from "./components/Footer/Footer";
 import Login from "./components/Login&Signup/login";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import {UserRoleProvider, useUserRole} from "./UserRoleContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -31,7 +32,7 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
-  const userRole = "user" // dummy data
+  const {userRole} = useUserRole() // dummy data
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
@@ -134,6 +135,7 @@ const App = () => {
   return (
     <Router>
       <div>
+      <UserRoleProvider>
         <CssBaseline />
         <Navbar
           totalItems={cart.total_items}
@@ -203,7 +205,7 @@ const App = () => {
             />
           </Route>
           {/* Route protection for admin routes */}
-          {userRole === 'admin' && (
+          {userRole === 'ADMIN' && (
             <>
               <Route path="/add-book">
                 <AddBook />
@@ -216,13 +218,14 @@ const App = () => {
 
           {/* Redirect to home if user tries to access admin routes without admin role */}
           <Route path="/add-book">
-            {userRole !== 'admin' ? <Redirect to="/home" /> : null}
+            {userRole !== 'ADMIN' ? <Redirect to="/home" /> : null}
           </Route>
           <Route path="/users">
-            {userRole !== 'admin' ? <Redirect to="/home" /> : null}
+            {userRole !== 'ADMIN' ? <Redirect to="/home" /> : null}
           </Route>
         </Switch>
         <Footer />
+        </UserRoleProvider>
       </div>
     </Router>
   );
