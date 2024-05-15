@@ -1,30 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Table, TableContainer, TableHead, TableBody, TableRow, TableCell, Paper, IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import useStyles from './style';
 
 const CheckUsers = () => {
   const classes = useStyles();
+  const [users, setUsers] = useState([]);
 
-  // State for storing users
-  const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
-    { id: 3, name: 'Alice Johnson', email: 'alice@example.com', role: 'User' },
-    { id: 4, name: 'Bob Brown', email: 'bob@example.com', role: 'User' },
-    { id: 5, name: 'Lebron James', email: 'lebron@example.com', role: 'User' },
-    { id: 6, name: 'Steph Curry', email: 'curry@example.com', role: 'User' },
-    { id: 7, name: 'James Harden', email: 'harden@example.com', role: 'User' },
-    { id: 8, name: 'Kendrick Lamar', email: 'kendrick@example.com', role: 'Admin' },
-    { id: 9, name: 'Reis Stanovci', email: 'reis@example.com', role: 'Admin' },
-  ]);
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
-  const handleDelete = (userId) => {
-    // Filter out the user with the given userId
-    const updatedUsers = users.filter(user => user.id !== userId);
-    // Update the state with the filtered users
-    setUsers(updatedUsers);
-    console.log(`Deleted user with ID ${userId}`);
+  const token = sessionStorage.getItem('token');
+  axios.interceptors.request.use(
+    config=> {
+      config.headers.Authorization = `Bearer ${token}`;
+      return config;
+    },
+    error => {
+      return Promise.reject(error);
+    }
+  )
+
+  const fetchUsers = async () => {
+    try {
+       // Assuming the token is stored in sessionStorage
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users`);
+      const usersData = response.data.map(user => ({
+        id: user.id,
+        email: user.emailAddress,
+        role: user.role
+      }));
+      setUsers(usersData);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
+
+  const handleDelete = async (userId) => {
+    try {
+      await axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/${userId}`);
+      const updatedUsers = users.filter(user => user.id !== userId);
+      setUsers(updatedUsers);
+      console.log(`Deleted user with ID ${userId}`);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
   };
 
   return (
@@ -33,7 +55,6 @@ const CheckUsers = () => {
         <TableHead>
           <TableRow>
             <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
             <TableCell>Email</TableCell>
             <TableCell>Role</TableCell>
             <TableCell>Action</TableCell>
@@ -43,9 +64,8 @@ const CheckUsers = () => {
           {users.map((user) => (
             <TableRow key={user.id} className={classes.tableRow}>
               <TableCell>{user.id}</TableCell>
-              <TableCell>{user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
-              <TableCell>{user.role}</TableCell>
+              <TableCell>{user.role.name}</TableCell>
               <TableCell>
                 <IconButton aria-label="delete" onClick={() => handleDelete(user.id)}>
                   <DeleteIcon />

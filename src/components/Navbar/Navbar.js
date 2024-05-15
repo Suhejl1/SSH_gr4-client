@@ -25,19 +25,33 @@ import useStyles from "./styles";
 import AddBook from "../AddBook/add-book";
 import CheckUsers from "../CheckUsers/check-users";
 
-const Navbar = ({ totalItems, userRole="user" }) => {
+const userR = sessionStorage.getItem('role');
+
+
+const Navbar = ({ totalItems, userRole=userR }) => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+ 
 
   const handleLogout = () => {
+    sessionStorage.removeItem('role');
     setOpen(true);
+    
+    
   };
 
   const handleLogoutConfirm = () => {
     setOpen(false);
+    sessionStorage.removeItem('role');
     // Redirect to root path
+    // Replace the current URL in the browser history with the logout page URL
+    window.history.replaceState(null, null, '/');
+
+    // Redirect the user to the logout page
+    window.location.href = '/';
+    
     history.push("/");
   };
 
@@ -82,7 +96,7 @@ const Navbar = ({ totalItems, userRole="user" }) => {
             </IconButton>
 
             {/* Button to add a new book (for admin only) */}
-            {userRole === 'admin' && (
+            {userRole === 'ADMIN' && (
               <IconButton
                 className={classes.navbarButton} // Add the class here
                 component={Link}
@@ -95,7 +109,7 @@ const Navbar = ({ totalItems, userRole="user" }) => {
             )}
 
             {/* Button to view users (for admin only) */}
-            {userRole === 'admin' && (
+            {userRole === 'ADMIN' && (
               <IconButton
                 className={classes.navbarButton} // Add the class here
                 component={Link}

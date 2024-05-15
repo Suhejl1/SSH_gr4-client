@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useHistory, Link } from 'react-router-dom'; // Import useHistory and Link components
 import './Login.css'; // Import a CSS file for styling
 import bookImage from './book_store.jpg'; // Import the book image
+import axios from 'axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,10 +12,31 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Implement authentication logic here (e.g., send login request to server)
 
-    // Redirect to "/home" path on successful login
-    history.push('/home');
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/v1/auth/signin`, {
+        email,
+        password
+      });
+
+      const token = response.data.token;
+      const role = response.data.role;
+      
+      // Save token to local storage
+      sessionStorage.setItem('token', token);
+      console.log(sessionStorage.getItem('token'));
+      sessionStorage.setItem('role',role);
+
+
+
+      history.push('/home');
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        setError(error.response.data || 'Invalid email or password');
+      } else {
+        setError(error.message || 'Login failed');
+      }
+    }
   };
 
   return (

@@ -3,6 +3,8 @@ import { useHistory, Link } from 'react-router-dom'; // Import useHistory and Li
 import './Login.css'; // Import a CSS file for styling
 import bookImage from './book_store.jpg'; // Import the book image
 import { validateUsername, validatePassword } from './validation'; // Import validation functions
+import axios from 'axios';
+
 
 const SignUp = () => {
     const [username, setUsername] = useState('');
@@ -16,13 +18,6 @@ const SignUp = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate username
-        const usernameError = validateUsername(username);
-        if (usernameError) {
-            setError(usernameError);
-            return;
-        }
-
         // Validate password
         const passwordError = validatePassword(password);
         if (!passwordError) {
@@ -35,11 +30,21 @@ const SignUp = () => {
             return;
         }
 
-        // Implement registration logic here (e.g., send registration request to server)
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/v1/auth/signup`, {
+                email,
+                password
+            });
 
-        // Redirect to "/home" path on successful registration
-
-        history.push('/');
+            history.push('/'); // Redirect to home page after successful sign up
+        } catch (error) {
+            if (error.response) {
+                setError(error.response.data.message || 'Sign up failed');
+            } else {
+                setError('Sign up failed');
+            }
+            console.error('Error:', error);
+        }
     };
 
     return (
