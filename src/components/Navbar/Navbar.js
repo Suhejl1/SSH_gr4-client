@@ -24,22 +24,34 @@ import logo from "../../assets/circles.png";
 import useStyles from "./styles";
 import AddBook from "../AddBook/add-book";
 import CheckUsers from "../CheckUsers/check-users";
-import {useUserRole} from "../../UserRoleContext";
 
-const Navbar = ({ totalItems }) => {
+const userR = sessionStorage.getItem('role');
+
+
+const Navbar = ({ totalItems, userRole=userR }) => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  const {userRole} = useUserRole();
+ 
 
   const handleLogout = () => {
+    sessionStorage.removeItem('role');
     setOpen(true);
+    
+    
   };
 
   const handleLogoutConfirm = () => {
     setOpen(false);
+    sessionStorage.removeItem('role');
     // Redirect to root path
+    // Replace the current URL in the browser history with the logout page URL
+    window.history.replaceState(null, null, '/');
+
+    // Redirect the user to the logout page
+    window.location.href = '/';
+    
     history.push("/");
   };
 

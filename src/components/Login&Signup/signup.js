@@ -3,6 +3,8 @@ import { useHistory, Link } from 'react-router-dom'; // Import useHistory and Li
 import './Login.css'; // Import a CSS file for styling
 import bookImage from './book_store.jpg'; // Import the book image
 import { validateUsername, validatePassword } from './validation'; // Import validation functions
+import axios from 'axios';
+
 
 const SignUp = () => {
     const [username, setUsername] = useState('');
