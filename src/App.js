@@ -32,8 +32,11 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
+  
 
   const userRole = sessionStorage.getItem('role');
+
+  console.log('User role:', userRole);
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
