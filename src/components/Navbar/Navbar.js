@@ -1,3 +1,4 @@
+// src/components/Navbar/Navbar.js
 import React, { useState } from "react";
 import {
   AppBar,
@@ -27,31 +28,22 @@ import CheckUsers from "../CheckUsers/check-users";
 
 const userR = sessionStorage.getItem('role');
 
-
-const Navbar = ({ totalItems, userRole=userR }) => {
+const Navbar = ({ totalItems, userRole = userR }) => {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
   const [open, setOpen] = useState(false);
- 
 
   const handleLogout = () => {
     sessionStorage.removeItem('role');
     setOpen(true);
-    
-    
   };
 
   const handleLogoutConfirm = () => {
     setOpen(false);
     sessionStorage.removeItem('role');
-    // Redirect to root path
-    // Replace the current URL in the browser history with the logout page URL
     window.history.replaceState(null, null, '/');
-
-    // Redirect the user to the logout page
     window.location.href = '/';
-    
     history.push("/");
   };
 
@@ -59,11 +51,8 @@ const Navbar = ({ totalItems, userRole=userR }) => {
     setOpen(false);
   };
 
-  // Condition to check if the current path is either "/" or "/signup"
-  const hideNavbar =
-    location.pathname === "/" || location.pathname === "/signup";
+  const hideNavbar = location.pathname === "/" || location.pathname === "/signup";
 
-  // If hideNavbar is true, return null to not render the Navbar
   if (hideNavbar) {
     return null;
   }
@@ -84,9 +73,8 @@ const Navbar = ({ totalItems, userRole=userR }) => {
           </Typography>
 
           <div className={classes.buttonContainer}>
-            {/* Button for Home */}
             <IconButton
-              className={classes.navbarButton} // Add the class here
+              className={classes.navbarButton}
               component={Link}
               to="/home"
               aria-label="Home"
@@ -95,10 +83,9 @@ const Navbar = ({ totalItems, userRole=userR }) => {
               <Home />
             </IconButton>
 
-            {/* Button to add a new book (for admin only) */}
             {userRole === 'ADMIN' && (
               <IconButton
-                className={classes.navbarButton} // Add the class here
+                className={classes.navbarButton}
                 component={Link}
                 to="/add-book"
                 aria-label="Add new book"
@@ -108,10 +95,9 @@ const Navbar = ({ totalItems, userRole=userR }) => {
               </IconButton>
             )}
 
-            {/* Button to view users (for admin only) */}
             {userRole === 'ADMIN' && (
               <IconButton
-                className={classes.navbarButton} // Add the class here
+                className={classes.navbarButton}
                 component={Link}
                 to="/users"
                 aria-label="View users"
@@ -121,9 +107,8 @@ const Navbar = ({ totalItems, userRole=userR }) => {
               </IconButton>
             )}
 
-            {/* Button to view shopping cart */}
             <IconButton
-              className={classes.navbarButton} //Add the class here
+              className={classes.navbarButton}
               component={Link}
               to="/cart"
               aria-label="Show cart items"
@@ -134,20 +119,28 @@ const Navbar = ({ totalItems, userRole=userR }) => {
               </Badge>
             </IconButton>
 
-            {/* Logout button */}
-          <IconButton
-            className={classes.logoutButton}
-            aria-label="Log out"
-            color="inherit"
-            onClick={handleLogout}
-          >
-            <ExitToAppIcon />
-          </IconButton>
+            <IconButton
+              className={classes.navbarButton}
+              component={Link}
+              to="/faq"
+              aria-label="FAQ"
+              color="inherit"
+            >
+              <Typography>FAQ</Typography>
+            </IconButton>
+
+            <IconButton
+              className={classes.logoutButton}
+              aria-label="Log out"
+              color="inherit"
+              onClick={handleLogout}
+            >
+              <ExitToAppIcon />
+            </IconButton>
           </div>
         </Toolbar>
       </AppBar>
 
-      {/* Logout confirmation dialog */}
       <Dialog
         open={open}
         onClose={handleLogoutCancel}
