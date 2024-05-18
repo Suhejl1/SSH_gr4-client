@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from "react";
 import { CssBaseline } from "@material-ui/core";
 import { commerce } from "./lib/commerce";
@@ -23,7 +22,7 @@ import CheckUsers from "./components/CheckUsers/check-users";
 import Faq from "./components/Faq/faq"; // Import the FAQ component
 import axios from 'axios';
 import Wishlist from "./components/Wishlist/Wishlist";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // Corrected import
 
 const App = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -36,8 +35,6 @@ const App = () => {
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
   const [wishlist, setWishlist] = useState({});
-
-  
 
   const userRole = sessionStorage.getItem('role');
 
@@ -96,7 +93,29 @@ const App = () => {
   };
 
   const fetchCart = async () => {
-    setCart(await commerce.cart.retrieve());
+    try {
+      const token = sessionStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const userEmail = decodedToken.sub;
+      console.log(userEmail);
+
+      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const userId = userResponse.data;
+      console.log("UserResponse: ", userResponse);
+
+      const cartResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/carts/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setCart(cartResponse.data);
+    } catch (error) {
+      console.error('Error fetching cart', error);
+    }
   };
 
   const fetchWishlist = async () => {
@@ -105,19 +124,17 @@ const App = () => {
       const decodedToken = jwtDecode(token);
       const userEmail = decodedToken.sub;
       console.log(userEmail);
-  
-      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`,
-      {
+
+      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       const userId = userResponse.data;
-      console.log("UserResponse: ",userResponse);
-  
+      console.log("UserResponse: ", userResponse);
+
       // Fetch wishlist using the retrieved user ID
-      const wishlistResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/wishlists/${userId}`,
-       {
+      const wishlistResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/wishlists/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -128,9 +145,117 @@ const App = () => {
     }
   };
 
-  const handleAddToCart = async (productId, quantity) => {
-    const item = await commerce.cart.add(productId, quantity);
-    setCart(item.cart);
+  const handleAddToCart = async (bookId, quantity = 1) => {
+  try {
+    const token = sessionStorage.getItem('token');
+    const decodedToken = jwtDecode(token);
+    console.log(token);
+    const userId = decodedToken.sub;
+
+    const cartItem = {
+      userId: userId,
+      productId: bookId,
+      quantity: quantity
+    };
+
+    await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/v1/cart`, cartItem, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    fetchCart(); // Update the cart
+  } catch (error) {
+    console.error('Error adding to cart', error);
+  }
+};
+
+
+  const handleUpdateCartQty = async (bookId, quantity) => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const userEmail = decodedToken.sub;
+      console.log(userEmail);
+
+      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const userId = userResponse.data;
+      console.log("UserResponse: ", userResponse);
+
+      const cartResponse = await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/api/v1/carts/${userId}/${bookId}`,
+        { quantity },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      fetchCart(); // Update the cart
+    } catch (error) {
+      console.error('Error updating cart quantity', error);
+    }
+  };
+
+  const handleRemoveFromCart = async (bookId) => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const userEmail = decodedToken.sub;
+      console.log(userEmail);
+
+      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const userId = userResponse.data;
+      console.log("UserResponse: ", userResponse);
+
+      const cartResponse = await axios.delete(
+        `${process.env.REACT_APP_SERVER_URL}/api/v1/carts/${userId}/${bookId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      fetchCart(); // Update the cart
+    } catch (error) {
+      console.error('Error removing from cart', error);
+    }
+  };
+
+  const handleEmptyCart = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const userEmail = decodedToken.sub;
+      console.log(userEmail);
+
+      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const userId = userResponse.data;
+      console.log("UserResponse: ", userResponse);
+
+      const cartResponse = await axios.delete(
+        `${process.env.REACT_APP_SERVER_URL}/api/v1/carts/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      fetchCart(); // Update the cart
+    } catch (error) {
+      console.error('Error emptying cart', error);
+    }
   };
 
   const handleAddToWishlist = async (bookId) => {
@@ -139,16 +264,15 @@ const App = () => {
       const decodedToken = jwtDecode(token);
       const userEmail = decodedToken.sub;
       console.log(userEmail);
-  
-      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`,
-      {
+
+      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       const userId = userResponse.data;
-      console.log("UserResponse: ",userResponse);
-  
+      console.log("UserResponse: ", userResponse);
+
       const wishlistResponse = await axios.post(
         `${process.env.REACT_APP_SERVER_URL}/api/v1/wishlists/${userId}/${bookId}`,
         {},
@@ -156,52 +280,70 @@ const App = () => {
           headers: {
             Authorization: `Bearer ${token}`
           }
-        });
-        fetchWishlist(); // Update the wishlist
-      } catch (error) {
-        console.error('Error adding to wishlist', error)
-      }
-      
-      
+        }
+      );
+      fetchWishlist(); // Update the wishlist
+    } catch (error) {
+      console.error('Error adding to wishlist', error);
+    }
   };
 
-  const handleUpdateCartQty = async (lineItemId, quantity) => {
-    const response = await commerce.cart.update(lineItemId, { quantity });
-    setCart(response.cart);
-  };
+  const handleRemoveFromWishlist = async (bookId) => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const userEmail = decodedToken.sub;
+      console.log(userEmail);
 
-  const handleRemoveFromCart = async (lineItemId) => {
-    const response = await commerce.cart.remove(lineItemId);
-    setCart(response.cart);
-  };
-
-  const handleRemoveFromWishlist = (bookId) => {
-    const userId = 2; // Need changes. Suhejl part - change in the next days
-    axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/v1/wishlists/${userId}/${bookId}`)
-      .then(response => {
-        console.log(response.data);
-        fetchWishlist(); // Update the wishlist
-      })
-      .catch(error => {
-        console.error('Error removing from wishlist', error);
+      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
+      const userId = userResponse.data;
+      console.log("UserResponse: ", userResponse);
+
+      const wishlistResponse = await axios.delete(
+        `${process.env.REACT_APP_SERVER_URL}/api/v1/wishlists/${userId}/${bookId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      fetchWishlist(); // Update the wishlist
+    } catch (error) {
+      console.error('Error removing from wishlist', error);
+    }
   };
 
-  const handleEmptyCart = async () => {
-    const response = await commerce.cart.empty();
-    setCart(response.cart);
-  };
+  const handleEmptyWishlist = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const userEmail = decodedToken.sub;
+      console.log(userEmail);
 
-  const handleEmptyWishlist = () => {
-    const userId = 2; // Need changes. Suhejl part - change in the next days
-    axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/v1/wishlists/${userId}`)
-      .then(response => {
-        console.log(response.data);
-        fetchWishlist(); // Update the wishlist
-      })
-      .catch(error => {
-        console.error('Error clearing wishlist', error);
+      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
+      const userId = userResponse.data;
+      console.log("UserResponse: ", userResponse);
+
+      const wishlistResponse = await axios.delete(
+        `${process.env.REACT_APP_SERVER_URL}/api/v1/wishlists/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      fetchWishlist(); // Update the wishlist
+    } catch (error) {
+      console.error('Error clearing wishlist', error);
+    }
   };
 
   const refreshCart = async () => {
@@ -221,11 +363,12 @@ const App = () => {
       setErrorMessage(error.data.error.message);
     }
   };
-  
+
   useEffect(() => {
     fetchProducts();
     fetchWishlist();
-  }, []); 
+  }, []);
+
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   return (
@@ -274,8 +417,6 @@ const App = () => {
               wishlist={wishlist}
               onRemoveFromWishlist={handleRemoveFromWishlist}
               onEmptyWishlist={handleEmptyWishlist}
-              // onAddToCart={handleAddToCart}
-              // onEmptyWishlist={handleEmptyWishlist}
             />
           </Route>
           <Route path="/checkout" exact>
