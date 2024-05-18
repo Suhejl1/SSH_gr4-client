@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { TextField, Button, Typography, Grid, Paper } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Typography, Grid, Paper, MenuItem, Select, InputLabel, FormControl } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: '800px', // Adjust maximum width as needed
   },
 }));
-;
 
 const AddBook = () => {
   const classes = useStyles();
@@ -32,11 +33,25 @@ const AddBook = () => {
     publisherName: '',
     publisherLocation: '',
     publishingYear: '',
-    image: '', // Changed to a URL
+    image: '',
     description: '',
     quantity: '',
     isbn: '',
+    genres: [], // Added genres field
   });
+
+  const [genres, setGenres] = useState([]);
+
+  useEffect(() => {
+    // Fetch genres from the backend
+    axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/genre`)
+      .then(response => {
+        setGenres(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching genres:', error);
+      });
+  }, []);
 
   axios.interceptors.request.use(
     (config) => {
@@ -50,17 +65,14 @@ const AddBook = () => {
     }
   );
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Book data:", bookData);
     // Send bookData to backend using Axios
     axios.post(`${process.env.REACT_APP_SERVER_URL}/api/v1/books/add`, bookData)
       .then(response => {
-        if (response.status === 200) {
-          // Book added successfully
-          console.log('Book added successfully');
-          // Reset form fields
+        if (response.status === 201) {
+          toast.success('Book added successfully');
           setBookData({
             title: '',
             price: '',
@@ -74,14 +86,22 @@ const AddBook = () => {
             description: '',
             quantity: '',
             isbn: '',
+            genres: [],
           });
+        } else if (response.status === 409) {
+          toast.error('Error: Book already exists');
         } else {
-          // Error adding book
-          console.error('Error adding book');
+          toast.error('Unexpected response code: ' + response.status);
+          console.error('Unexpected response code:', response.status);
         }
       })
       .catch(error => {
-        console.error('Error:', error);
+        if (error.response && error.response.status === 409) {
+          toast.error('Error: Book already exists');
+        } else {
+          toast.error('Error: Unable to add book');
+          console.error('Error:', error);
+        }
       });
   };
 
@@ -90,105 +110,109 @@ const AddBook = () => {
     setBookData({ ...bookData, [name]: value });
   };
 
+  const handleGenreChange = (event) => {
+    setBookData({ ...bookData, genres: event.target.value });
+  };
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
         <Typography variant="h6" gutterBottom>Add New Book</Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 label="Title"
                 name="title"
-                fullWidth
                 value={bookData.title}
                 onChange={handleChange}
+                fullWidth
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 label="Price"
                 name="price"
-                type="number"
-                fullWidth
                 value={bookData.price}
                 onChange={handleChange}
+                type="number"
+                fullWidth
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 label="Author Name"
                 name="authorName"
-                fullWidth
                 value={bookData.authorName}
                 onChange={handleChange}
+                fullWidth
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 label="Author Nationality"
                 name="authorNationality"
-                fullWidth
                 value={bookData.authorNationality}
                 onChange={handleChange}
+                fullWidth
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 label="Author Birth Date"
                 name="authorBirthDate"
-                type="date"
-                fullWidth
                 value={bookData.authorBirthDate}
                 onChange={handleChange}
-                required
+                type="date"
                 InputLabelProps={{
                   shrink: true,
                 }}
+                fullWidth
+                required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 label="Publisher Name"
                 name="publisherName"
-                fullWidth
                 value={bookData.publisherName}
                 onChange={handleChange}
+                fullWidth
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 label="Publisher Location"
                 name="publisherLocation"
-                fullWidth
                 value={bookData.publisherLocation}
                 onChange={handleChange}
+                fullWidth
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 label="Publishing Year"
                 name="publishingYear"
-                type="number"
-                fullWidth
                 value={bookData.publishingYear}
                 onChange={handleChange}
+                type="number"
+                fullWidth
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 label="Image URL"
                 name="image"
-                fullWidth
                 value={bookData.image}
                 onChange={handleChange}
+                fullWidth
                 required
               />
             </Grid>
@@ -196,34 +220,53 @@ const AddBook = () => {
               <TextField
                 label="Description"
                 name="description"
-                fullWidth
-                multiline
-                rows={4}
                 value={bookData.description}
                 onChange={handleChange}
+                multiline
+                rows={4}
+                fullWidth
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 label="Quantity"
                 name="quantity"
-                type="number"
-                fullWidth
                 value={bookData.quantity}
                 onChange={handleChange}
+                type="number"
+                fullWidth
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
-                label="isbn"
+                label="ISBN"
                 name="isbn"
-                fullWidth
-                value={bookData.ISBN}
+                value={bookData.isbn}
                 onChange={handleChange}
+                fullWidth
                 required
               />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel id="genres-label">Genres</InputLabel>
+                <Select
+                  labelId="genres-label"
+                  id="genres"
+                  multiple
+                  value={bookData.genres}
+                  onChange={handleGenreChange}
+                  renderValue={(selected) => selected.join(', ')}
+                >
+                  {genres.map((genre) => (
+                    <MenuItem key={genre.id} value={genre.name}>
+                      {genre.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <Button type="submit" variant="contained" color="primary">Add Book</Button>
@@ -231,6 +274,7 @@ const AddBook = () => {
           </Grid>
         </form>
       </Paper>
+      <ToastContainer />
     </div>
   );
 };
