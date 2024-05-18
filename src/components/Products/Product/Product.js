@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardMedia,
@@ -7,13 +7,22 @@ import {
   Typography,
   Button,
   CardActionArea,
+  IconButton
 } from "@material-ui/core";
-import { AddShoppingCart } from "@material-ui/icons";
+import { AddShoppingCart, Favorite } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import useStyles from "./styles";
 
-const Product = ({ product, onAddToCart }) => {
+const Product = ({ product, onAddToCart, onAddToWishlist }) => {
   const classes = useStyles();
+  const [isInWishlist, setIsInWishlist] = useState(false);
+
+  const handleAddToWishlist = () => {
+    // Toggle the state and call the onAddToWishlist function
+    setIsInWishlist(!isInWishlist);
+    onAddToWishlist(product.id, 1);
+  };
+
   return (
     <Card className={classes.root}>
       <Link to={`product-view/${product.id}`}>
@@ -36,14 +45,26 @@ const Product = ({ product, onAddToCart }) => {
         </div>
       </CardContent>
       <CardActions disableSpacing className={classes.cardActions}>
-        <Button
-          variant="contained"
-          className={classes.button}
-          endIcon={<AddShoppingCart />}
-          onClick={() => onAddToCart(product.id, 1)}
-        >
-          <b>ADD TO CART</b>
-        </Button>
+        <div className={classes.cartButtonContainer}>
+          <Button
+            variant="contained"
+            className={classes.button}
+            style={{flex: "0 0 auto"}}
+            endIcon={<AddShoppingCart />}
+            onClick={() => onAddToCart(product.id, 1)}
+          >
+            <b>ADD TO CART</b>
+          </Button>
+          </div>
+          <div>
+          <IconButton
+              className={classes.wishlistButton}
+              onClick={handleAddToWishlist}
+              color={isInWishlist ? "secondary" : "default"}
+            >
+              <Favorite />
+            </IconButton>
+          </div>
       </CardActions>
     </Card>
   );
