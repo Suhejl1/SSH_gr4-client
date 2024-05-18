@@ -1,5 +1,5 @@
+// src/App.js
 import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
 import { CssBaseline } from "@material-ui/core";
 import { commerce } from "./lib/commerce";
 import Products from "./components/Products/Products";
@@ -14,13 +14,13 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-d
 import "bootstrap/dist/css/bootstrap.min.css";
 import "mdbreact/dist/css/mdb.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import loadingImg from "./assets/loader.gif";
 import "./style.css";
 import Fiction from "./components/Fiction/Fiction";
 import Biography from "./components/Bio/Biography";
 import SignUp from "./components/Login&Signup/signup";
-import AddBook from "./components/AddBook/add-book"; 
+import AddBook from "./components/AddBook/add-book";
 import CheckUsers from "./components/CheckUsers/check-users";
+import Faq from "./components/Faq/faq"; // Import the FAQ component
 
 const App = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -32,7 +32,6 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
-  
 
   const userRole = sessionStorage.getItem('role');
 
@@ -111,17 +110,8 @@ const App = () => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchProducts();
-  //   fetchFeatureProducts();
-  //   fetchCart();
-  //   fetchMangaProducts();
-  //   fetchFictionProducts();
-  //   fetchBioProducts();
-  // }, []);
-
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
-  
+
   return (
     <Router>
       <div>
@@ -193,8 +183,10 @@ const App = () => {
               handleUpdateCartQty
             />
           </Route>
-          {/* Route protection for admin routes */}
-          {userRole === 'ADMIN' && (
+          <Route path="/faq">
+            <Faq />
+          </Route>
+          {userRole === 'ADMIN' ? (
             <>
               <Route path="/add-book">
                 <AddBook />
@@ -203,15 +195,16 @@ const App = () => {
                 <CheckUsers />
               </Route>
             </>
+          ) : (
+            <>
+              <Route path="/add-book">
+                <Redirect to="/home" />
+              </Route>
+              <Route path="/users">
+                <Redirect to="/home" />
+              </Route>
+            </>
           )}
-
-          {/* Redirect to home if user tries to access admin routes without admin role */}
-          <Route path="/add-book">
-            {userRole !== 'ADMIN' ? <Redirect to="/home" /> : null}
-          </Route>
-          <Route path="/users">
-            {userRole !== 'ADMIN' ? <Redirect to="/home" /> : null}
-          </Route>
         </Switch>
         <Footer />
       </div>
