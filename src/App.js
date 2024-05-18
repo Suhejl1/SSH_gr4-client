@@ -21,6 +21,9 @@ import SignUp from "./components/Login&Signup/signup";
 import AddBook from "./components/AddBook/add-book";
 import CheckUsers from "./components/CheckUsers/check-users";
 import Faq from "./components/Faq/faq"; // Import the FAQ component
+import axios from 'axios';
+import Wishlist from "./components/Wishlist/Wishlist";
+import { jwtDecode } from "jwt-decode";
 
 const App = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -32,15 +35,36 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
+  const [wishlist, setWishlist] = useState({});
+
   
 
   const userRole = sessionStorage.getItem('role');
 
   console.log('User role:', userRole);
 
+  if(userRole){
+    axios.interceptors.request.use(
+      (config) => {
+        const token = sessionStorage.getItem('token');
+        console.log("Bearer token:", token);
+        config.headers.Authorization = `Bearer ${token}`;
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+  }
+
   const fetchProducts = async () => {
-    const { data } = await commerce.products.list();
-    setProducts(data);
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/books`);
+      const data = response.data;
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching the products:", error);
+    }
   };
 
   const fetchMangaProducts = async () => {
@@ -75,9 +99,70 @@ const App = () => {
     setCart(await commerce.cart.retrieve());
   };
 
+  const fetchWishlist = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const userEmail = decodedToken.sub;
+      console.log(userEmail);
+  
+      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const userId = userResponse.data;
+      console.log("UserResponse: ",userResponse);
+  
+      // Fetch wishlist using the retrieved user ID
+      const wishlistResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/wishlists/${userId}`,
+       {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setWishlist(wishlistResponse.data);
+    } catch (error) {
+      console.error('Error fetching wishlist', error);
+    }
+  };
+
   const handleAddToCart = async (productId, quantity) => {
     const item = await commerce.cart.add(productId, quantity);
     setCart(item.cart);
+  };
+
+  const handleAddToWishlist = async (bookId) => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const userEmail = decodedToken.sub;
+      console.log(userEmail);
+  
+      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const userId = userResponse.data;
+      console.log("UserResponse: ",userResponse);
+  
+      const wishlistResponse = await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/api/v1/wishlists/${userId}/${bookId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        fetchWishlist(); // Update the wishlist
+      } catch (error) {
+        console.error('Error adding to wishlist', error)
+      }
+      
+      
   };
 
   const handleUpdateCartQty = async (lineItemId, quantity) => {
@@ -90,9 +175,33 @@ const App = () => {
     setCart(response.cart);
   };
 
+  const handleRemoveFromWishlist = (bookId) => {
+    const userId = 2; // Need changes. Suhejl part - change in the next days
+    axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/v1/wishlists/${userId}/${bookId}`)
+      .then(response => {
+        console.log(response.data);
+        fetchWishlist(); // Update the wishlist
+      })
+      .catch(error => {
+        console.error('Error removing from wishlist', error);
+      });
+  };
+
   const handleEmptyCart = async () => {
     const response = await commerce.cart.empty();
     setCart(response.cart);
+  };
+
+  const handleEmptyWishlist = () => {
+    const userId = 2; // Need changes. Suhejl part - change in the next days
+    axios.delete(`${process.env.REACT_APP_SERVER_URL}/api/v1/wishlists/${userId}`)
+      .then(response => {
+        console.log(response.data);
+        fetchWishlist(); // Update the wishlist
+      })
+      .catch(error => {
+        console.error('Error clearing wishlist', error);
+      });
   };
 
   const refreshCart = async () => {
@@ -112,7 +221,11 @@ const App = () => {
       setErrorMessage(error.data.error.message);
     }
   };
-
+  
+  useEffect(() => {
+    fetchProducts();
+    fetchWishlist();
+  }, []); 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   return (
@@ -135,6 +248,7 @@ const App = () => {
               products={products}
               featureProducts={featureProducts}
               onAddToCart={handleAddToCart}
+              onAddToWishlist={handleAddToWishlist}
               handleUpdateCartQty
             />
           </Route>
@@ -143,6 +257,7 @@ const App = () => {
               products={products}
               featureProducts={featureProducts}
               onAddToCart={handleAddToCart}
+              onAddToWishlist={handleAddToWishlist}
               handleUpdateCartQty
             />
           </Route>
@@ -152,6 +267,15 @@ const App = () => {
               onUpdateCartQty={handleUpdateCartQty}
               onRemoveFromCart={handleRemoveFromCart}
               onEmptyCart={handleEmptyCart}
+            />
+          </Route>
+          <Route path="/wishlist">
+            <Wishlist 
+              wishlist={wishlist}
+              onRemoveFromWishlist={handleRemoveFromWishlist}
+              onEmptyWishlist={handleEmptyWishlist}
+              // onAddToCart={handleAddToCart}
+              // onEmptyWishlist={handleEmptyWishlist}
             />
           </Route>
           <Route path="/checkout" exact>

@@ -13,7 +13,7 @@ import fictionBg from "../../assets/fiction.jpg";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 
-const Products = ({ products, onAddToCart, featureProducts }) => {
+const Products = ({ products, onAddToCart, onAddToWishlist,featureProducts }) => {
   const classes = useStyles();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -157,7 +157,11 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
                   lg={2}
                   id="pro"
                 >
-                  <Product product={product} onAddToCart={onAddToCart} />
+                  <Product 
+                    product={product} 
+                    onAddToCart={onAddToCart}
+                    onAddToWishlist={onAddToWishlist}  
+                  />
                 </Grid>
               ))}
             </Grid>
@@ -221,7 +225,11 @@ const Products = ({ products, onAddToCart, featureProducts }) => {
                 lg={3}
                 id="pro"
               >
-                <Product product={product} onAddToCart={onAddToCart} />
+                <Product 
+                  product={product} 
+                  onAddToCart={onAddToCart} 
+                  onAddToWishlist={onAddToWishlist} 
+                />
               </Grid>
             ))}
         </Grid>

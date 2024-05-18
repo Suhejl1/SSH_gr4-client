@@ -19,6 +19,7 @@ import {
   Group,
   Home,
   ExitToApp as ExitToAppIcon,
+  Favorite as FavoriteIcon
 } from "@material-ui/icons";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import logo from "../../assets/circles.png";
@@ -81,6 +82,16 @@ const Navbar = ({ totalItems, userRole = userR }) => {
               color="inherit"
             >
               <Home />
+            </IconButton>
+
+            <IconButton
+              className="{classes.navbarButton}"
+              component={Link}
+              to="/wishlist"
+              aria-label="Wishlist"
+              color="inherit"
+            >
+              <FavoriteIcon />
             </IconButton>
 
             {userRole === 'ADMIN' && (

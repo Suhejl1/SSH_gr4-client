@@ -1,4 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
+import theme from "@material-ui/core"
 
 export default makeStyles(() => ({
   root: {
@@ -24,7 +25,7 @@ export default makeStyles(() => ({
   button: {
     background: "#001524",
     color: "white",
-    width: "100%",
+    width: "300px",
     height: "40px",
 
     "&:hover": {
