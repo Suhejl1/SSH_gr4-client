@@ -19,7 +19,7 @@ import "./style.css";
 import Fiction from "./components/Fiction/Fiction";
 import Biography from "./components/Bio/Biography";
 import SignUp from "./components/Login&Signup/signup";
-import AddBook from "./components/AddBook/add-book"; 
+import AddBook from "./components/AddBook/add-book";
 import CheckUsers from "./components/CheckUsers/check-users";
 
 const App = () => {
@@ -32,9 +32,11 @@ const App = () => {
   const [cart, setCart] = useState({});
   const [order, setOrder] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
-  
+
 
   const userRole = sessionStorage.getItem('role');
+
+  console.log('User role:', userRole);
 
   const fetchProducts = async () => {
     const { data } = await commerce.products.list();
@@ -121,7 +123,7 @@ const App = () => {
   // }, []);
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
-  
+
   return (
     <Router>
       <div>
