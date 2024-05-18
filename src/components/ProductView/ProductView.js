@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { commerce } from "../../lib/commerce";
 import { useState, useEffect } from "react";
 import "./style.css";
+import axios from 'axios';
 
 const createMarkup = (text) => {
   return { __html: text };
@@ -12,33 +13,51 @@ const createMarkup = (text) => {
 const ProductView = () => {
   const [product, setProduct] = useState({});
 
+  // const fetchProduct = async (id) => {
+  //   const response = await commerce.products.retrieve(id);
+  //   console.log({ response });
+  //   const { name, price, media, quantity, description } = response;
+  //   setProduct({
+  //     name,
+  //     quantity,
+  //     description,
+  //     src: media.source,
+  //     price: price.formatted_with_symbol,
+  //   });
+  // };
+
   const fetchProduct = async (id) => {
-    const response = await commerce.products.retrieve(id);
-    console.log({ response });
-    const { name, price, media, quantity, description } = response;
-    setProduct({
-      name,
-      quantity,
-      description,
-      src: media.source,
-      price: price.formatted_with_symbol,
-    });
-  };
+    try{
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/books/${id}`);
+
+      const {title, price, image, description} = response.data;
+
+      setProduct({
+        title,
+        description,
+        image,
+        price: `${price} €`
+      });
+    }catch (error){
+      console.log("Error fetching product: ", error);
+    }
+  }
 
   useEffect(() => {
-    const id = window.location.pathname.split("/");
-    fetchProduct(id[2]);
+    const path = window.location.pathname;
+    const id = path.substring(path.lastIndexOf('/') + 1);
+    fetchProduct(id);
   }, []);
 
   return (
     <Container className="product-view">
       <Grid container>
         <Grid item xs={12} md={6} className="image-wrapper">
-          <img src={product.src} alt={product.name} />
+          <img src={product.image} alt={product.title} />
         </Grid>
         <Grid item xs={12} md={5} className="text">
           <Typography variant="h2">
-            <b>{product.name}</b>
+            <b>{product.title}</b>
           </Typography>
           <Typography
             variant="p"

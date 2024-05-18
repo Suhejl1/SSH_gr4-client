@@ -20,18 +20,18 @@ const Product = ({ product, onAddToCart }) => {
         <CardActionArea>
           <CardMedia
             className={classes.media}
-            image={product.media.source}
-            title={product.name}
+            image={product.image}
+            title={product.title}
           />
         </CardActionArea>
       </Link>
       <CardContent>
         <div className={classes.cardContent}>
-          <p className={classes.cardContentName}> {product.name}</p>
+          <p className={classes.cardContentName}> {product.title}</p>
         </div>
         <div className={classes.cardContent}>
           <p className={classes.cardContentPrice}>
-            <b>{product.price.formatted_with_symbol}</b>
+            <b>{`${product.price} €`}</b>
           </p>
         </div>
       </CardContent>

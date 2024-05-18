@@ -20,7 +20,9 @@ const Login = () => {
       });
 
       const token = response.data.token;
+      console.log("THis is the token returned: " + token)
       const role = response.data.role;
+      
       
       // Save token to local storage
       sessionStorage.setItem('token', token);

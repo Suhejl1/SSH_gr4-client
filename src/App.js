@@ -21,6 +21,7 @@ import SignUp from "./components/Login&Signup/signup";
 import AddBook from "./components/AddBook/add-book";
 import CheckUsers from "./components/CheckUsers/check-users";
 import Faq from "./components/Faq/faq"; // Import the FAQ component
+import axios from 'axios';
 
 const App = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -38,9 +39,26 @@ const App = () => {
 
   console.log('User role:', userRole);
 
+  axios.interceptors.request.use(
+    (config) => {
+      const token = sessionStorage.getItem('token');
+      console.log("Bearer token:", token);
+      config.headers.Authorization = `Bearer ${token}`;
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
   const fetchProducts = async () => {
-    const { data } = await commerce.products.list();
-    setProducts(data);
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/books`);
+      const data = response.data;
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching the products:", error);
+    }
   };
 
   const fetchMangaProducts = async () => {
@@ -112,7 +130,10 @@ const App = () => {
       setErrorMessage(error.data.error.message);
     }
   };
-
+  
+  useEffect(() => {
+    fetchProducts();
+  }, []); 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   return (
