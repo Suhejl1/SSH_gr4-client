@@ -97,7 +97,7 @@ const App = () => {
       const token = sessionStorage.getItem('token');
       const decodedToken = jwtDecode(token);
       const userEmail = decodedToken.sub;
-      console.log(userEmail);
+      console.log("hello");
 
       const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`, {
         headers: {
@@ -107,7 +107,7 @@ const App = () => {
       const userId = userResponse.data;
       console.log("UserResponse: ", userResponse);
 
-      const cartResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/carts/${userId}`, {
+      const cartResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/cart/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -146,28 +146,28 @@ const App = () => {
   };
 
   const handleAddToCart = async (bookId, quantity = 1) => {
-  try {
-    const token = sessionStorage.getItem('token');
-    const decodedToken = jwtDecode(token);
-    console.log(token);
-    const userId = decodedToken.sub;
-
-    const cartItem = {
-      userId: userId,
-      productId: bookId,
-      quantity: quantity
-    };
-
-    await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/v1/cart`, cartItem, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-    fetchCart(); // Update the cart
-  } catch (error) {
-    console.error('Error adding to cart', error);
-  }
-};
+    try {
+      const token = sessionStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.userId;  // Ensure the token contains userId
+  
+      const cartItem = {
+        userId: userId,
+        bookId: bookId, // Ensure field name matches backend expectation
+        quantity: quantity
+      };
+  
+      await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/v1/cart`, cartItem, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      fetchCart(); // Update the cart
+    } catch (error) {
+      console.error('Error adding to cart', error);
+    }
+  };
+  
 
 
   const handleUpdateCartQty = async (bookId, quantity) => {
@@ -186,7 +186,7 @@ const App = () => {
       console.log("UserResponse: ", userResponse);
 
       const cartResponse = await axios.put(
-        `${process.env.REACT_APP_SERVER_URL}/api/v1/carts/${userId}/${bookId}`,
+        `${process.env.REACT_APP_SERVER_URL}/api/v1/cart/${userId}/${bookId}`,
         { quantity },
         {
           headers: {
@@ -216,7 +216,7 @@ const App = () => {
       console.log("UserResponse: ", userResponse);
 
       const cartResponse = await axios.delete(
-        `${process.env.REACT_APP_SERVER_URL}/api/v1/carts/${userId}/${bookId}`,
+        `${process.env.REACT_APP_SERVER_URL}/api/v1/cart/${userId}/${bookId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -245,7 +245,7 @@ const App = () => {
       console.log("UserResponse: ", userResponse);
 
       const cartResponse = await axios.delete(
-        `${process.env.REACT_APP_SERVER_URL}/api/v1/carts/${userId}`,
+        `${process.env.REACT_APP_SERVER_URL}/api/v1/cart/${userId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
