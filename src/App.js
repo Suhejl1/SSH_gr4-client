@@ -40,7 +40,7 @@ const App = () => {
 
   console.log('User role:', userRole);
 
-  if(userRole){
+  if (userRole) {
     axios.interceptors.request.use(
       (config) => {
         const token = sessionStorage.getItem('token');
@@ -149,14 +149,23 @@ const App = () => {
     try {
       const token = sessionStorage.getItem('token');
       const decodedToken = jwtDecode(token);
-      const userId = decodedToken.userId;  // Ensure the token contains userId
-  
+      const userEmail = decodedToken.sub;  // Ensure the token contains userId
+      console.log(userEmail);
+
+      const userResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/byEmail/${userEmail}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const userId = userResponse.data;
+      console.log("UserResponse: ", userResponse);
+
       const cartItem = {
-        userId: userId,
-        bookId: bookId, // Ensure field name matches backend expectation
+        cartId: userId,
+        productItemId: bookId, // Ensure field name matches backend expectation
         quantity: quantity
       };
-  
+
       await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/v1/cart`, cartItem, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -167,7 +176,6 @@ const App = () => {
       console.error('Error adding to cart', error);
     }
   };
-  
 
 
   const handleUpdateCartQty = async (bookId, quantity) => {
@@ -185,9 +193,14 @@ const App = () => {
       const userId = userResponse.data;
       console.log("UserResponse: ", userResponse);
 
+      const cartItem = {
+        cartId: userId,
+        productItemId: bookId, // Ensure field name matches backend expectation
+        quantity: quantity
+      };
+
       const cartResponse = await axios.put(
-        `${process.env.REACT_APP_SERVER_URL}/api/v1/cart/${userId}/${bookId}`,
-        { quantity },
+        `${process.env.REACT_APP_SERVER_URL}/api/v1/cart/update/${cartItem.cartId}/${cartItem.productItemId}/${cartItem.quantity}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -367,6 +380,7 @@ const App = () => {
   useEffect(() => {
     fetchProducts();
     fetchWishlist();
+    fetchCart();
   }, []);
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
@@ -413,7 +427,7 @@ const App = () => {
             />
           </Route>
           <Route path="/wishlist">
-            <Wishlist 
+            <Wishlist
               wishlist={wishlist}
               onRemoveFromWishlist={handleRemoveFromWishlist}
               onEmptyWishlist={handleEmptyWishlist}
