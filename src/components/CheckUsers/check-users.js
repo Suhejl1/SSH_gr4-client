@@ -9,8 +9,8 @@ const CheckUsers = () => {
   const [users, setUsers] = useState([]);
   const [userIdToDelete, setUserIdToDelete] = useState(null);
   const [isAddAdminDialogOpen, setIsAddAdminDialogOpen] = useState(false);
-  const [adminEmail, setAdminEmail] = useState('');
-  const [adminPassword, setAdminPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   useEffect(() => {
     fetchUsers();
@@ -64,15 +64,14 @@ const CheckUsers = () => {
   };
 
   const handleAddAdmin = async () => {
-    // Perform the action to add an admin here
-    console.log('Adding admin with email:', adminEmail, 'and password:', adminPassword);
     // Close the dialog after adding the admin
     try {
-      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/v1/auth/signup/admin`, {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/signup/admin`, {
           email,
           password
       });
-
+      
+      fetchUsers();
       history.push('/'); // Redirect to home page after successful sign up
   } catch (error) {
       console.error('Error:', error);
@@ -142,8 +141,8 @@ const CheckUsers = () => {
             label="Email Address"
             type="email"
             fullWidth
-            value={adminEmail}
-            onChange={(e) => setAdminEmail(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             margin="dense"
@@ -151,8 +150,8 @@ const CheckUsers = () => {
             label="Password"
             type="password"
             fullWidth
-            value={adminPassword}
-            onChange={(e) => setAdminPassword(e.target.value)}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
