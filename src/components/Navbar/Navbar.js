@@ -94,7 +94,7 @@ const Navbar = ({ totalItems, userRole = userR }) => {
               <FavoriteIcon />
             </IconButton>
 
-            {userRole === 'ADMIN' && (
+            {(userRole === 'ADMIN' ||  userRole === "MASTER") && (
               <IconButton
                 className={classes.navbarButton}
                 component={Link}
@@ -106,7 +106,7 @@ const Navbar = ({ totalItems, userRole = userR }) => {
               </IconButton>
             )}
 
-            {userRole === 'ADMIN' && (
+            {userRole === 'MASTER' && (
               <IconButton
                 className={classes.navbarButton}
                 component={Link}

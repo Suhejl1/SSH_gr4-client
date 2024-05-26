@@ -12,6 +12,8 @@ const Faq = () => {
   const token = sessionStorage.getItem('token');
   const isLoggedIn = !!token;
   const isAdmin = sessionStorage.getItem('role') === 'ADMIN';
+  const isMaster = sessionStorage.getItem('role') === 'MASTER';
+
 
   console.log('Token:', token);
   console.log('Is logged in:', isLoggedIn);
@@ -94,7 +96,7 @@ const Faq = () => {
               primary={<span style={{ fontWeight: 'bold', fontSize: '14px' }}>{faq.question}</span>}
               secondary={<span style={{ fontSize: '12px' }}>{faq.answer}</span>}
             />
-            {isAdmin && !faq.answer && (
+            {(isAdmin || isMaster) && !faq.answer && (
               <form onSubmit={(e) => { e.preventDefault(); handleAnswerSubmit(faq.id); }}>
                 <TextField
                   label="Answer"
