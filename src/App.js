@@ -195,7 +195,7 @@ const App = () => {
 
       const cartItem = {
         cartId: userId,
-        productItemId: bookId, // Ensure field name matches backend expectation
+        productItemId: bookId, 
         quantity: quantity
       };
 
@@ -295,7 +295,7 @@ const App = () => {
           }
         }
       );
-      fetchWishlist(); // Update the wishlist
+      fetchWishlist(); 
     } catch (error) {
       console.error('Error adding to wishlist', error);
     }
@@ -324,7 +324,7 @@ const App = () => {
           }
         }
       );
-      fetchWishlist(); // Update the wishlist
+      fetchWishlist(); 
     } catch (error) {
       console.error('Error removing from wishlist', error);
     }
@@ -353,7 +353,7 @@ const App = () => {
           }
         }
       );
-      fetchWishlist(); // Update the wishlist
+      fetchWishlist(); 
     } catch (error) {
       console.error('Error clearing wishlist', error);
     }
@@ -406,6 +406,7 @@ const App = () => {
               featureProducts={featureProducts}
               onAddToCart={handleAddToCart}
               onAddToWishlist={handleAddToWishlist}
+              // setProducts={setProducts} 
               handleUpdateCartQty
             />
           </Route>

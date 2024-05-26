@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Grid, InputAdornment, Input } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import Product from "./Product/Product.js";
@@ -12,11 +12,18 @@ import bioBg from "../../assets/biography.jpg";
 import fictionBg from "../../assets/fiction.jpg";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
+import axios from 'axios';
+import {Select, MenuItem} from "@material-ui/core";
 
-const Products = ({ products, onAddToCart, onAddToWishlist,featureProducts }) => {
+
+const Products = ({ products, onAddToCart, onAddToWishlist,featureProducts}) => {
   const classes = useStyles();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [genres, setGenres] = useState([]);
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [matchedBooks, setMatchedBooks] = useState([]);
+  const [noBooksFound, setNoBooksFound] = useState(false);
 
   const sectionRef = useRef(null);
 
@@ -24,6 +31,60 @@ const Products = ({ products, onAddToCart, onAddToWishlist,featureProducts }) =>
     // Scrolls to the section when the input is clicked
     sectionRef.current.scrollIntoView({ behavior: "smooth" });
   };
+
+  axios.interceptors.request.use(
+    (config) => {
+      const token = sessionStorage.getItem('token');
+      console.log("Bearer token:", token);
+      config.headers.Authorization = `Bearer ${token}`;
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+  const handleGenreChange = async (event) => {
+    event.persist();
+
+    const selectedGenre = event.target.value;
+
+    setSelectedGenre(selectedGenre);
+    console.log(selectedGenre);
+
+    try {
+      const genreIdResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/genre/name/${selectedGenre}`);
+      console.log("Gender ID is: ", genreIdResponse.data)
+
+      const genreId = genreIdResponse.data;
+
+      const booksResponse = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/books/genre/${genreId}/books`);
+      setMatchedBooks(booksResponse.data);
+      console.log("Product is fetched")
+      console.log(matchedBooks)
+      setNoBooksFound(booksResponse.data.length === 0);
+
+    } catch (error) {
+      console.error("Error fetching books by genre:", error);
+    }
+  };
+
+useEffect(() => {
+  // Fetch genres from backend
+  axios.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/genre`)
+    .then(response => {
+      // Extract genre names from response data
+      const genreNames = response.data.map(genre => genre.name);
+      setGenres(genreNames);
+    })
+    .catch(error => {
+      console.error("Error fetching genres:", error);
+    });
+}, []);
+
+useEffect(() => {
+  console.log("Matched Books Updated:", matchedBooks);
+}, [matchedBooks]);
 
   return (
     <main className={classes.mainPage}>
@@ -65,109 +126,62 @@ const Products = ({ products, onAddToCart, onAddToWishlist,featureProducts }) =>
           <h3 className={classes.categoryDesc}>
             Browse our featured categories
           </h3>
-          <div className={classes.buttonSection}>
-            <div>
-              <Link to="manga">
-                <button
-                  className={classes.categoryButton}
-                  style={{ backgroundImage: `url(${mangaBg})` }}
-                ></button>
-              </Link>
-              <div className={classes.categoryName}>Manga</div>
-            </div>
-            <div>
-              <Link to="biography">
-                <button
-                  className={classes.categoryButton}
-                  style={{ backgroundImage: `url(${bioBg})` }}
-                ></button>
-              </Link>
-              <div className={classes.categoryName}>Biography</div>
-            </div>
-            <div>
-              <Link to="fiction">
-                <button
-                  className={classes.categoryButton}
-                  style={{ backgroundImage: `url(${fictionBg})` }}
-                ></button>
-              </Link>
-              <div className={classes.categoryName}>Fiction</div>
-            </div>
+          <div style={{ textAlign: 'center', marginTop: '50px' }}>
+            <h2>Select the genre:</h2>
+            <Select
+              value={selectedGenre}
+              onChange={handleGenreChange}
+              displayEmpty
+              className={classes.contentHeader}
+              style={{
+                width: '500px', 
+                borderRadius: '20px', 
+                padding: '10px', 
+                textAlign: 'center', 
+                color: 'white', 
+                fontWeight: 'bold', 
+              }}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    borderRadius: '20px',
+                  },
+                },
+              }}
+            >
+              <MenuItem value="" disabled>
+                Select Genre
+              </MenuItem>
+              {genres.map(genre => (
+                <MenuItem key={genre} value={genre}>{genre}</MenuItem>
+              ))}
+            </Select>
           </div>
         </div>
       )}
 
-      <div className={classes.carouselSection}>
-        <Carousel
-          showIndicators={false}
-          autoPlay={true}
-          infiniteLoop={true}
-          showArrows={true}
-          showStatus={false}
-        >
-          <div>
-            <Link to="manga">
-              <button
-                className={classes.categoryButton}
-                style={{ backgroundImage: `url(${mangaBg})` }}
-              ></button>
-            </Link>
-            <div className={classes.categoryName}>Manga</div>
+      {/* Book Display Section */}
+      <div className={classes.contentHeader}>
+        {noBooksFound ? (
+          <div className={classes.noBooks}>
+            <h3>No books found for the selected genre.</h3>
           </div>
-          <div>
-            <Link to="biography">
-              <button
-                className={classes.categoryButton}
-                style={{ backgroundImage: `url(${bioBg})` }}
-              ></button>
-            </Link>
-            <div className={classes.categoryName}>Biography</div>
-          </div>
-          <div>
-            <Link to="fiction">
-              <button
-                className={classes.categoryButton}
-                style={{ backgroundImage: `url(${fictionBg})` }}
-              ></button>
-            </Link>
-            <div className={classes.categoryName}>Fiction</div>
-          </div>
-        </Carousel>
-      </div>
-
-      {searchTerm === "" && (
-        <>
-          <div>
-            <h3 className={classes.contentHeader}>
-              Best <span style={{ color: "#f1361d" }}>Sellers</span>
-            </h3>
-            <Grid
-              className={classes.contentFeatured}
-              container
-              justify="center"
-              spacing={1}
-            >
-              {featureProducts.map((product) => (
-                <Grid
-                  className={classes.contentFeatured}
-                  item
-                  xs={6}
-                  sm={5}
-                  md={3}
-                  lg={2}
-                  id="pro"
-                >
-                  <Product 
-                    product={product} 
+        ) : (
+          matchedBooks.length > 0 && (
+            <Grid container spacing={2} justifyContent="center">
+              {matchedBooks.map(book => (
+                <Grid item xs={12} sm={1} md={4} lg={3} key={book.id}>
+                  <Product
+                    product={book}
                     onAddToCart={onAddToCart}
-                    onAddToWishlist={onAddToWishlist}  
+                    onAddToWishlist={onAddToWishlist}
                   />
                 </Grid>
               ))}
             </Grid>
-          </div>
-        </>
-      )}
+          )
+        )}
+      </div>
 
       <div>
         {searchTerm === "" && (
@@ -225,10 +239,10 @@ const Products = ({ products, onAddToCart, onAddToWishlist,featureProducts }) =>
                 lg={3}
                 id="pro"
               >
-                <Product 
-                  product={product} 
-                  onAddToCart={onAddToCart} 
-                  onAddToWishlist={onAddToWishlist} 
+                <Product
+                  product={product}
+                  onAddToCart={onAddToCart}
+                  onAddToWishlist={onAddToWishlist}
                 />
               </Grid>
             ))}

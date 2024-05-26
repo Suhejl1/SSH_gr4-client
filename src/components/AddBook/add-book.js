@@ -41,6 +41,7 @@ const AddBook = () => {
   });
 
   const [genres, setGenres] = useState([]);
+  const [booksByGenre, setBooksByGenre] = useState([]);
 
   useEffect(() => {
     // Fetch genres from the backend
