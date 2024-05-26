@@ -469,7 +469,7 @@ const App = () => {
           <Route path="/faq">
             <Faq />
           </Route>
-          {userRole === 'ADMIN' ? (
+          {(userRole === 'ADMIN' || userRole === 'MASTER') ? (
             <>
               <Route path="/add-book">
                 <AddBook />
@@ -484,6 +484,19 @@ const App = () => {
                 <Redirect to="/home" />
               </Route>
               <Route path="/users">
+                <Redirect to="/home" />
+              </Route>
+            </>
+          )}
+           {(userRole === 'ADMIN') ? (
+            <>
+              <Route path="/add-book">
+                <AddBook />
+              </Route>
+            </>
+          ) : (
+            <>
+              <Route path="/add-book">
                 <Redirect to="/home" />
               </Route>
             </>
