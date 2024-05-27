@@ -23,6 +23,8 @@ import Faq from "./components/Faq/faq"; // Import the FAQ component
 import axios from 'axios';
 import Wishlist from "./components/Wishlist/Wishlist";
 import { jwtDecode } from "jwt-decode"; // Corrected import
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -176,7 +178,6 @@ const App = () => {
       console.error('Error adding to cart', error);
     }
   };
-
 
   const handleUpdateCartQty = async (bookId, quantity) => {
     try {
@@ -359,23 +360,42 @@ const App = () => {
     }
   };
 
-  const refreshCart = async () => {
-    const newCart = await commerce.cart.refresh();
-    setCart(newCart);
-  };
 
-  const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
+
+  const handleCaptureCheckout = async (newOrder) => {
+    console.log("The new Order Item:", newOrder);
     try {
-      const incomingOrder = await commerce.checkout.capture(
-        checkoutTokenId,
-        newOrder
+      const token = sessionStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const userEmail = decodedToken.sub;
+      console.log(userEmail);
+
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/api/v1/orders`,
+        newOrder,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       );
-      setOrder(incomingOrder);
-      refreshCart();
+
+      if (response.status === 201) {
+        setOrder(response.data);
+
+      } else {
+        console.error('Error placing order:', response.data);
+        setErrorMessage('Failed to place order');
+      }
     } catch (error) {
-      setErrorMessage(error.data.error.message);
+      console.error('Network error:', error);
+      setErrorMessage('Failed to place order');
     }
   };
+
+
+
 
   useEffect(() => {
     fetchProducts();
@@ -502,6 +522,7 @@ const App = () => {
             </>
           )}
         </Switch>
+        <ToastContainer />
         <Footer />
       </div>
     </Router>

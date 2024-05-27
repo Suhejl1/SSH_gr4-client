@@ -1,23 +1,17 @@
-import React from "react";
-import { Typography, Button, Divider } from "@material-ui/core";
-import {
-  Elements,
-  CardElement,
-  ElementsConsumer,
-} from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import React from 'react';
+import { Typography, Button, Divider } from '@material-ui/core';
+import { Elements, CardElement, ElementsConsumer } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import Review from './Review';
+import { toast } from 'react-toastify';
+import { useHistory } from 'react-router-dom';
 
-import Review from "./Review";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const PaymentForm = ({
-  checkoutToken,
-  nextStep,
-  backStep,
-  shippingData,
-  onCaptureCheckout,
-}) => {
+const PaymentForm = ({ cart, shippingData, onCaptureCheckout, nextStep, backStep }) => {
+  const history = useHistory();
+
   const handleSubmit = async (event, elements, stripe) => {
     event.preventDefault();
 
@@ -26,67 +20,52 @@ const PaymentForm = ({
     const cardElement = elements.getElement(CardElement);
 
     const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
+      type: 'card',
       card: cardElement,
     });
 
     if (error) {
-      console.log("[error]", error);
+      console.log('[error]', error);
     } else {
+      const orderItems = cart.map((item) => ({
+        productItemId: item.id,
+        orderId: null, // Assuming the orderId is generated on the backend
+        quantity: item.quantity,
+        price: item.price,
+      }));
+
       const orderData = {
-        line_items: checkoutToken.live.line_items,
-        customer: {
-          firstname: shippingData.firstName,
-          lastname: shippingData.lastName,
-          email: shippingData.email,
-        },
-        shipping: {
-          name: "International",
-          street: shippingData.address1,
-          town_city: shippingData.city,
-          county_state: shippingData.shippingSubdivision,
-          postal_zip_code: shippingData.zip,
-          country: shippingData.shippingCountry,
-        },
-        fulfillment: { shipping_method: shippingData.shippingOption },
-        payment: {
-          gateway: "stripe",
-          stripe: {
-            payment_method_id: paymentMethod.id,
-          },
-        },
+        userId: shippingData.userId,
+        orderDate: new Date().toISOString().split('T')[0],
+        shippingAddress: `${shippingData.address}, ${shippingData.city}, ${shippingData.zip}`,
+        orderTotal: cart.reduce((total, item) => total + (item.price * item.quantity), 0),
+        orderItems: orderItems,
       };
 
-      onCaptureCheckout(checkoutToken.id, orderData);
-
+      console.log("Order dat in payment form:", orderData);
+      toast.success("Order placed successfully!");
+      onCaptureCheckout(orderData);
       nextStep();
+
+      history.push('/home');
     }
   };
 
   return (
     <>
-      <Review checkoutToken={checkoutToken} />
+      <Review cart={cart} shippingData={shippingData} />
       <Divider />
-      <Typography variant="h6" gutterBottom style={{ margin: "20px 0" }}>
-        Payment method
-      </Typography>
+      <Typography variant="h6" gutterBottom style={{ margin: '20px 0' }}>Payment method</Typography>
       <Elements stripe={stripePromise}>
         <ElementsConsumer>
           {({ elements, stripe }) => (
             <form onSubmit={(e) => handleSubmit(e, elements, stripe)}>
               <CardElement />
               <br /> <br />
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <Button variant="outlined" onClick={backStep}>
-                  Back
-                </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={!stripe}
-                  style={{ backgroundColor: "#001524", color: "#FFFF" }}
-                >
-                  Pay {checkoutToken.live.subtotal.formatted_with_symbol}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Button variant="outlined" onClick={backStep}>Back</Button>
+                <Button type="submit" variant="contained" color="primary" disabled={!stripe}>
+                  Pay ${cart.reduce((total, item) => total + (item.price * item.quantity), 0)}
                 </Button>
               </div>
             </form>
